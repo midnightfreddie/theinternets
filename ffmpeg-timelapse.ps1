@@ -19,6 +19,8 @@ filter Get-FfmpegCommands {
             PathFullName = $_.FullName
             PathName = $_.Name
             OutputFileName = $Images[0].Split("\/")[-1] -replace '-?(\d+)?\.jpe?g$', '.mpg'
+            # Assumes counters are zero-padded four digit; e.g. 0001, 0002, 0003 . Change %04d to %03d or whatnot for different number of digit padding
+            InputFileSpec = $Images[0] -replace '(\d+)(\.jpe?g)$', '%04d$2'
         }
     }
 }
@@ -49,7 +51,10 @@ Get-Folders -RootFolder $RootFolder |
         # UNCOMMENT THE FOLLOWING LINE when you're ready to try for real
         # Currently it will show a lot of red, but that's because ffmpeg is chatty.
         # If running more than once, realize that ffmpeg will stop if the output file already exists
-        Get-Content -Raw $_.Images | &$ffmpeg  -f image2pipe -c:v mjpeg -i - $outfilename
+        # &$ffmpeg  -f image2 -c:v mjpeg -i "$($_.InputFileSpec)" $outfilename
+
+        # OLD attempt at piping files to ffmpeg. Worked in ISE, didn't work in console.
+        # Get-Content -Raw $_.Images | &$ffmpeg  -f image2pipe -c:v mjpeg -i - $outfilename
 
         # This is just to see the output objects
         $_ | Format-List
