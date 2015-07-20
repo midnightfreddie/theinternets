@@ -3,7 +3,7 @@
 
 #$ffmpeg = "C:\tools\ffmpeg-2.5.2-win64-shared\bin\ffmpeg.exe"
 $ffmpeg = "C:\tools\ffmpeg-20150720-git-9ebe041-win64-static\bin\ffmpeg.exe"
-$RootFolder = "C:\Temp\pics"
+$myRootFolder = "C:\Temp\pics"
 $DestFolder = "C:\Temp\videos"
     
 # Pipe a stream of folders to this and get an object with the jpgs in that folder and some other info
@@ -36,7 +36,7 @@ function Get-Folders {
     
 
 # Beginning of script. 
-Get-Folders -RootFolder $RootFolder |
+Get-Folders -RootFolder $myRootFolder |
     Get-FfmpegCommands |
     ForEach-Object {
 
@@ -49,7 +49,9 @@ Get-Folders -RootFolder $RootFolder |
         # UNCOMMENT THE FOLLOWING LINE when you're ready to try for real
         # Currently it will show a lot of red, but that's because ffmpeg is chatty.
         # If running more than once, realize that ffmpeg will stop if the output file already exists
-        Get-Content -Raw $_.Images | &$ffmpeg  -f image2pipe -c:v mjpeg -i - $outfilename
+        $_.Images | ForEach-Object {
+            Get-Content -Raw $_
+        } | &$ffmpeg  -f image2pipe -c:v mjpeg -i - $outfilename
 
         # This is just to see the output objects
         $_ | Format-List
