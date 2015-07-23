@@ -77,5 +77,5 @@ Get-Folders -RootFolder $RootFolder |
         Write-Verbose "Image set: $($_ | Format-List | Out-String)"
 
         # UNCOMMENT THE FOLLOWING LINE when you're ready to try for real
-        Out-FfmpegFile -ffmpeg $ffmpeg -InputFileSpec $_.InputFileSpec -Path $outfilename
+        # Out-FfmpegFile -ffmpeg $ffmpeg -InputFileSpec $_.InputFileSpec -Path $outfilename
     }
