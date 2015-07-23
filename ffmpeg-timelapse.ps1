@@ -100,7 +100,10 @@ Get-Folders -RootFolder $RootFolder |
     Out-FfmpegFile -ffmpeg $ffmpeg -PassThru -ForReal $ForReal |
     # ConvertTo-Json
     # Export-Csv -NoTypeInformation -Path "$BaseIndexFileName.csv"
-    ForEach-Object { $_.OutputFileName = Get-Href $_.OutputFileName ; $_ } | ConvertTo-Html | Out-File -Encoding utf8 -FilePath "$BaseIndexFileName.html"
+    ConvertTo-Html | Out-File -Encoding utf8 -FilePath "$BaseIndexFileName.html"
+
+    # This doesn't quite work like I want. The links "download" the file.
+    # ConvertTo-Html | ForEach-Object { $_ -replace '(<td>)([^<]+)(</td></tr>)', '$1<a href="$2">$2</a>$3' } | Out-File -Encoding utf8 -FilePath "$BaseIndexFileName.html"
 
     # To catch any piped output to avoid an error due to commenting/uncommenting stuff
     ForEach-Object { $_ }
