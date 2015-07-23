@@ -73,6 +73,13 @@ filter Get-FfmpegCommands {
         }
     }
 }
+
+function Get-Href {
+    param (
+        $Link
+    )
+    "<a href=""{0}"">{1}</a>" -f $Link, $Link.Split("\/")[-1]
+}
     
 # Given a folder, returns a stream of folders including this one and all recursive subfolders
 function Get-Folders {
@@ -86,13 +93,27 @@ function Get-Folders {
         Where-Object { $_.PsIsContainer }
 }
 
+filter Out-Html {
+    begin {
+        $out = [System.Collections.ArrayList]@()
+    }
+    process {
+        $_.OutputFileName = Get-Href $_.OutputFileName
+        $out.Add( ($_ | ConvertTo-Html) )
+    }
+    end {
+        "<html><head></head><body>{0}</body>" -f ($out | Out-String)
+    }
+}
+
 # Beginning of script. 
 Get-Folders -RootFolder $RootFolder |
     Get-FfmpegCommands -DestPath $DestPath |
     Out-FfmpegFile -ffmpeg $ffmpeg -PassThru -ForReal $ForReal |
     # ConvertTo-Json
     # Export-Csv -NoTypeInformation -Path "$DestPath\$((Get-Date -Format s).Replace(":", "-"))-output.csv"
-    ConvertTo-Html
+    ForEach-Object { $_.OutputFileName = Get-Href $_.OutputFileName ; $_ } | ConvertTo-Html
+    #Out-Html
 
     # To catch any piped output to avoid an error due to commenting/uncommenting stuff
     ForEach-Object { $_ }
