@@ -16,13 +16,21 @@ filter Get-FfmpegCommands {
             Select-Object -ExpandProperty FullName
         
     if ($Images -ne $null) {
+
+        # Use first-letter of each parent path prepended to output filename
+        $SubPath = $_.FullName.Replace($RootFolder, "")
+        $Prefix = (
+            $SubPath.Split("\/",[System.StringSplitOptions]::RemoveEmptyEntries) |
+                ForEach-Object { $_.ToCharArray()[0] }
+        ) -Join "-"
+
         [pscustomobject]@{
             PathFullName = $_.FullName
             PathName = $_.Name
             Images = $Images
             # Assumes counters are zero-padded four digit; e.g. 0001, 0002, 0003 . Change %04d to %03d or whatnot for different number of digit padding
             InputFileSpec = $Images[0] -replace '(\d+)(\.jpe?g)$', '%04d$2'
-            OutputFileName = $Images[0].Split("\/")[-1] -replace '-?(\d+)?\.jpe?g$', '.mpg'
+            OutputFileName = "$Prefix-$($Images[0].Split("\/")[-1] -replace '-?(\d+)?\.jpe?g$', '.mpg')"
         }
     }
 }
@@ -58,16 +66,9 @@ function Out-FfmpegFile {
 Get-Folders -RootFolder $RootFolder |
     Get-FfmpegCommands |
     ForEach-Object {
-        # Use this one to output to $DestFolder with first-letter of each parent path prepended to output name
-        $SubPath = $_.PathFullName.Replace($RootFolder, "")
-        $Prefix = (
-            $SubPath.Split("\/",[System.StringSplitOptions]::RemoveEmptyEntries) |
-                ForEach-Object { $_.ToCharArray()[0] }
-        ) -Join "-"
-        $outfilename = "$DestFolder\$Prefix-$($_.OutputFilename)"
 
         # Use this one to put the videos in $DestFolder
-        #$outfilename = "$DestFolder\$($_.OutputFilename)"
+        $outfilename = "$DestFolder\$($_.OutputFilename)"
 
         # Use this to put the videos in the path with the images
         #$outfilename = "$($_.PathFullName)\$($_.OutputFilename)"
@@ -75,8 +76,6 @@ Get-Folders -RootFolder $RootFolder |
         # This is just to see the output objects
         Write-Verbose "Image set: $($_ | Format-List | Out-String)"
 
-        Write-Verbose "Adjusted Output Filename $outfilename"
-
         # UNCOMMENT THE FOLLOWING LINE when you're ready to try for real
-        # Out-FfmpegFile -ffmpeg $ffmpeg -InputFileSpec $_.InputFileSpec -Path $outfilename
+        Out-FfmpegFile -ffmpeg $ffmpeg -InputFileSpec $_.InputFileSpec -Path $outfilename
     }
