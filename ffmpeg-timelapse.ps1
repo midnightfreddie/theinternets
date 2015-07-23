@@ -93,27 +93,14 @@ function Get-Folders {
         Where-Object { $_.PsIsContainer }
 }
 
-filter Out-Html {
-    begin {
-        $out = [System.Collections.ArrayList]@()
-    }
-    process {
-        $_.OutputFileName = Get-Href $_.OutputFileName
-        $out.Add( ($_ | ConvertTo-Html) )
-    }
-    end {
-        "<html><head></head><body>{0}</body>" -f ($out | Out-String)
-    }
-}
-
-# Beginning of script. 
+# Beginning of script.
+$BaseIndexFileName = "$DestPath\$((Get-Date -Format s).Replace(":", "-"))-output"
 Get-Folders -RootFolder $RootFolder |
     Get-FfmpegCommands -DestPath $DestPath |
     Out-FfmpegFile -ffmpeg $ffmpeg -PassThru -ForReal $ForReal |
     # ConvertTo-Json
-    # Export-Csv -NoTypeInformation -Path "$DestPath\$((Get-Date -Format s).Replace(":", "-"))-output.csv"
-    ForEach-Object { $_.OutputFileName = Get-Href $_.OutputFileName ; $_ } | ConvertTo-Html
-    #Out-Html
+    # Export-Csv -NoTypeInformation -Path "$BaseIndexFileName.csv"
+    ForEach-Object { $_.OutputFileName = Get-Href $_.OutputFileName ; $_ } | ConvertTo-Html | Out-File -Encoding utf8 -FilePath "$BaseIndexFileName.html"
 
     # To catch any piped output to avoid an error due to commenting/uncommenting stuff
     ForEach-Object { $_ }
