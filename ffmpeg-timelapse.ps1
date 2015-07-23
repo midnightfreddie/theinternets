@@ -5,9 +5,35 @@
 param (
     $ffmpeg = "C:\tools\ffmpeg-20150720-git-9ebe041-win64-static\bin\ffmpeg.exe",
     $RootFolder = "C:\Temp\pics",
-    $DestFolder = "C:\Temp\videos"
+    $DestFolder = "C:\Temp\videos",
+    [switch] $ForReal
 )
-    
+
+# Moved the ffmpeg call here so it's easy to find and edit command-line flags
+filter Out-FfmpegFile {
+    param (
+        # Apparently filters can't have mandatory parameters?
+        #[Parameter(Mandatory = $true)]
+        $ffmpeg,
+        [switch]$PassThru,
+        $ForReal = $false
+    )
+
+    Write-Verbose "File spec: $($_.InputFileSpec)"
+    Write-Verbose "Output Filename: $($_.OutputFileName)"
+
+    # Currently it will show a lot of red, but that's because ffmpeg is chatty.
+    # If running more than once, realize that ffmpeg will stop if the output file already exists
+
+    if ($ForReal) {
+        Write-Verbose "Running ffmpeg"
+        &$ffmpeg  -f image2 -c:v mjpeg -i "$($_.InputFileSpec)" "$($_.OutputFileName)"
+    } else {
+        Write-Verbose "Not running ffmpeg because `$ForReal not true"
+    }
+
+    if ($Passthru) { $_ }
+}    
 # Pipe a stream of folders to this and get an object with the jpgs in that folder and some other info
 # If $DestPath parameter not provided or "", will output to same folder where jpgs are
 filter Get-FfmpegCommands {
@@ -56,33 +82,10 @@ function Get-Folders {
         Where-Object { $_.PsIsContainer }
 }
 
-# Moved the ffmpeg call here so it's easy to find and edit command-line flags
-filter Out-FfmpegFile {
-    param (
-        # Apparently filters can't have mandatory parameters?
-        #[Parameter(Mandatory = $true)]
-        $ffmpeg,
-        [switch]$PassThru
-    )
-
-    Write-Verbose "Running ffmpeg"
-    Write-Verbose "File spec: $($_.InputFileSpec)"
-    Write-Verbose "Output Filename: $($_.OutputFileName)"
-
-    # Currently it will show a lot of red, but that's because ffmpeg is chatty.
-    # If running more than once, realize that ffmpeg will stop if the output file already exists
-
-    &$ffmpeg  -f image2 -c:v mjpeg -i "$($_.InputFileSpec)" "$($_.OutputFileName)"
-
-    if ($Passthru) { $_ }
-}
-
 # Beginning of script. 
 Get-Folders -RootFolder $RootFolder |
     Get-FfmpegCommands -DestPath $DestFolder |
-
-    # UNCOMMENT THE FOLLOWING LINE when you're ready to try for real
-    # Out-FfmpegFile -ffmpeg $ffmpeg -PassThru |
+    Out-FfmpegFile -ffmpeg $ffmpeg -PassThru -ForReal $ForReal |
 
     # To catch any piped output to avoid an error due to commenting/uncommenting stuff
     Out-Default
