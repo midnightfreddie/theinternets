@@ -39,31 +39,44 @@ function Get-Folders {
         Where-Object { $_.PsIsContainer }
 }
 
+# Moved the ffmpeg call here so it's easy to find and edit command-line flags
 function Out-FfmpegFile {
     [cmdletbinding()]
     param (
         [Parameter(Mandatory = $true)] $ffmpeg,
-        [Parameter(Mandatory = $true)]$InputFileSpec,
-        [Parameter(Mandatory = $true)]$Path
+        [Parameter(Mandatory = $true)] $InputFileSpec,
+        [Parameter(Mandatory = $true)] $Path
     )
     # Currently it will show a lot of red, but that's because ffmpeg is chatty.
     # If running more than once, realize that ffmpeg will stop if the output file already exists
-    &$ffmpeg  -f image2 -c:v mjpeg -i "$($InputFileSpec)" $Path
+
+    &$ffmpeg  -f image2 -c:v mjpeg -i "$InputFileSpec" "$Path"
+
 }
 
 # Beginning of script. 
 Get-Folders -RootFolder $RootFolder |
     Get-FfmpegCommands |
     ForEach-Object {
+        # Use this one to output to $DestFolder with first-letter of each parent path prepended to output name
+        $SubPath = $_.PathFullName.Replace($RootFolder, "")
+        $Prefix = (
+            $SubPath.Split("\/",[System.StringSplitOptions]::RemoveEmptyEntries) |
+                ForEach-Object { $_.ToCharArray()[0] }
+        ) -Join "-"
+        $outfilename = "$DestFolder\$Prefix-$($_.OutputFilename)"
+
 
         # Use this one to put the videos in $DestFolder
-        $outfilename = "$DestFolder\$($_.OutputFilename)"
+        #$outfilename = "$DestFolder\$($_.OutputFilename)"
 
         # Use this to put the videos in the path with the images
         #$outfilename = "$($_.PathFullName)\$($_.OutputFilename)"
 
         # This is just to see the output objects
         Write-Verbose "Image set: $($_ | Format-List | Out-String)"
+
+        Write-Verbose "Adjusted Output Filename $outfilename"
 
         # UNCOMMENT THE FOLLOWING LINE when you're ready to try for real
         # Out-FfmpegFile -ffmpeg $ffmpeg -InputFileSpec $_.InputFileSpec -Path $outfilename
