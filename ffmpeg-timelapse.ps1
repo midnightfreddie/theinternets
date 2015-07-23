@@ -9,11 +9,15 @@ param (
 )
     
 # Pipe a stream of folders to this and get an object with the jpgs in that folder and some other info
+# If $DestPath parameter not provided or "", will output to same folder where jpgs are
 filter Get-FfmpegCommands {
+    param (
+        $DestPath = $null
+    )
     $Images = Get-ChildItem $_.Fullname |
-            Where-Object { -not $_.PsIsContainer } |
-            Where-Object { $_.Name -imatch '\.jpe?g$'} |
-            Select-Object -ExpandProperty FullName
+        Where-Object { -not $_.PsIsContainer } |
+        Where-Object { $_.Name -imatch '\.jpe?g$'} |
+        Select-Object -ExpandProperty FullName
         
     if ($Images -ne $null) {
 
@@ -23,6 +27,11 @@ filter Get-FfmpegCommands {
             $SubPath.Split("\/",[System.StringSplitOptions]::RemoveEmptyEntries) |
                 ForEach-Object { $_.ToCharArray()[0] }
         ) -Join "-"
+        if ($DestPath) {
+            $OutputFileName = "$DestPath\$Prefix-$($Images[0].Split("\/")[-1] -replace '-?(\d+)?\.jpe?g$', '.mpg')"
+        } else {
+            $OutputFileName = "$($_.Fullname)\$Prefix-$($Images[0].Split("\/")[-1] -replace '-?(\d+)?\.jpe?g$', '.mpg')"
+        }
 
         [pscustomobject]@{
             PathFullName = $_.FullName
@@ -30,7 +39,7 @@ filter Get-FfmpegCommands {
             Images = $Images
             # Assumes counters are zero-padded four digit; e.g. 0001, 0002, 0003 . Change %04d to %03d or whatnot for different number of digit padding
             InputFileSpec = $Images[0] -replace '(\d+)(\.jpe?g)$', '%04d$2'
-            OutputFileName = "$Prefix-$($Images[0].Split("\/")[-1] -replace '-?(\d+)?\.jpe?g$', '.mpg')"
+            OutputFileName = $OutputFileName
         }
     }
 }
@@ -48,34 +57,26 @@ function Get-Folders {
 }
 
 # Moved the ffmpeg call here so it's easy to find and edit command-line flags
-function Out-FfmpegFile {
-    [cmdletbinding()]
+filter Out-FfmpegFile {
     param (
-        [Parameter(Mandatory = $true)] $ffmpeg,
-        [Parameter(Mandatory = $true)] $InputFileSpec,
-        [Parameter(Mandatory = $true)] $Path
+        # Apparently filters can't have mandatory parameters?
+        #[Parameter(Mandatory = $true)]
+        $ffmpeg,
+        [switch]$Passthru
     )
     # Currently it will show a lot of red, but that's because ffmpeg is chatty.
     # If running more than once, realize that ffmpeg will stop if the output file already exists
 
-    &$ffmpeg  -f image2 -c:v mjpeg -i "$InputFileSpec" "$Path"
+    &$ffmpeg  -f image2 -c:v mjpeg -i "$($_.InputFileSpec)" "$($_.OutputFileName)"
 
+    if ($Passthru) { $_ }
 }
 
 # Beginning of script. 
 Get-Folders -RootFolder $RootFolder |
-    Get-FfmpegCommands |
-    ForEach-Object {
+    Get-FfmpegCommands -DestPath $DestFolder |
 
-        # Use this one to put the videos in $DestFolder
-        $outfilename = "$DestFolder\$($_.OutputFilename)"
+    # UNCOMMENT THE FOLLOWING LINE when you're ready to try for real
+    # Out-FfmpegFile -ffmpeg $ffmpeg -Passthru |
 
-        # Use this to put the videos in the path with the images
-        #$outfilename = "$($_.PathFullName)\$($_.OutputFilename)"
-
-        # This is just to see the output objects
-        Write-Verbose "Image set: $($_ | Format-List | Out-String)"
-
-        # UNCOMMENT THE FOLLOWING LINE when you're ready to try for real
-        # Out-FfmpegFile -ffmpeg $ffmpeg -InputFileSpec $_.InputFileSpec -Path $outfilename
-    }
+    Out-Default
