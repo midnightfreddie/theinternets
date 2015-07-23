@@ -1,11 +1,15 @@
 ﻿# Script in reply to reddit question "Help for a script for converting many timelapses to thumbnail videos via ffmpeg?"
 # https://www.reddit.com/r/PowerShell/comments/3duoy8/help_for_a_script_for_converting_many_timelapses/
 
+# Pass this script the -ForReal switch to actually run the ffmpeg command
+# Pass in the correct parameters or edit the defaults below
+# An empty $DestPath will cause output mpgs to go to the same folder where the input jpgs are
+
 [cmdletbinding()]
 param (
     $ffmpeg = "C:\tools\ffmpeg-20150720-git-9ebe041-win64-static\bin\ffmpeg.exe",
     $RootFolder = "C:\Temp\pics",
-    $DestFolder = "C:\Temp\videos",
+    $DestPath = "C:\Temp\videos",
     [switch] $ForReal
 )
 
@@ -84,10 +88,11 @@ function Get-Folders {
 
 # Beginning of script. 
 Get-Folders -RootFolder $RootFolder |
-    Get-FfmpegCommands -DestPath $DestFolder |
+    Get-FfmpegCommands -DestPath $DestPath |
     Out-FfmpegFile -ffmpeg $ffmpeg -PassThru -ForReal $ForReal |
     # ConvertTo-Json
-    # Export-Csv -NoTypeInformation -Path "$DestFolder\$((Get-Date -Format s).Replace(":", "-"))-output.csv"
+    # Export-Csv -NoTypeInformation -Path "$DestPath\$((Get-Date -Format s).Replace(":", "-"))-output.csv"
+    ConvertTo-Html
 
     # To catch any piped output to avoid an error due to commenting/uncommenting stuff
     ForEach-Object { $_ }
