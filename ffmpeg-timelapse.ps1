@@ -62,7 +62,7 @@ filter Get-FfmpegCommands {
         [pscustomobject]@{
             PathFullName = $_.FullName
             PathName = $_.Name
-            Images = $Images
+            # Images = $Images
             # Assumes counters are zero-padded four digit; e.g. 0001, 0002, 0003 . Change %04d to %03d or whatnot for different number of digit padding
             InputFileSpec = $Images[0] -replace '(\d+)(\.jpe?g)$', '%04d$2'
             OutputFileName = $OutputFileName
@@ -86,6 +86,8 @@ function Get-Folders {
 Get-Folders -RootFolder $RootFolder |
     Get-FfmpegCommands -DestPath $DestFolder |
     Out-FfmpegFile -ffmpeg $ffmpeg -PassThru -ForReal $ForReal |
+    # ConvertTo-Json
+    # Export-Csv -NoTypeInformation -Path "$DestFolder\$((Get-Date -Format s).Replace(":", "-"))-output.csv"
 
     # To catch any piped output to avoid an error due to commenting/uncommenting stuff
-    Out-Default
+    ForEach-Object { $_ }
