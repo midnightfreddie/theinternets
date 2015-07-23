@@ -29,6 +29,7 @@ filter Get-FfmpegCommands {
     
 # Given a folder, returns a stream of folders including this one and all recursive subfolders
 function Get-Folders {
+    [cmdletbinding()]
     param (
         [Parameter(Mandatory = $true)]
         $RootFolder
@@ -38,6 +39,17 @@ function Get-Folders {
         Where-Object { $_.PsIsContainer }
 }
 
+function Out-FfmpegFile {
+    [cmdletbinding()]
+    param (
+        [Parameter(Mandatory = $true)] $ffmpeg,
+        [Parameter(Mandatory = $true)]$InputFileSpec,
+        [Parameter(Mandatory = $true)]$Path
+    )
+    # Currently it will show a lot of red, but that's because ffmpeg is chatty.
+    # If running more than once, realize that ffmpeg will stop if the output file already exists
+    &$ffmpeg  -f image2 -c:v mjpeg -i "$($InputFileSpec)" $Path
+}
 
 # Beginning of script. 
 Get-Folders -RootFolder $RootFolder |
@@ -54,7 +66,5 @@ Get-Folders -RootFolder $RootFolder |
         Write-Verbose "Image set: $($_ | Format-List | Out-String)"
 
         # UNCOMMENT THE FOLLOWING LINE when you're ready to try for real
-        # Currently it will show a lot of red, but that's because ffmpeg is chatty.
-        # If running more than once, realize that ffmpeg will stop if the output file already exists
-        # &$ffmpeg  -f image2 -c:v mjpeg -i "$($_.InputFileSpec)" $outfilename
+        # Out-FfmpegFile -ffmpeg $ffmpeg -InputFileSpec $_.InputFileSpec -Path $outfilename
     }
