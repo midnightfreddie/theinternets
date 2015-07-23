@@ -16,13 +16,13 @@ filter Get-FfmpegCommands {
             Select-Object -ExpandProperty FullName
         
     if ($Images -ne $null) {
-        New-Object psobject -Property @{
-            Images = $Images
+        [pscustomobject]@{
             PathFullName = $_.FullName
             PathName = $_.Name
-            OutputFileName = $Images[0].Split("\/")[-1] -replace '-?(\d+)?\.jpe?g$', '.mpg'
+            Images = $Images
             # Assumes counters are zero-padded four digit; e.g. 0001, 0002, 0003 . Change %04d to %03d or whatnot for different number of digit padding
             InputFileSpec = $Images[0] -replace '(\d+)(\.jpe?g)$', '%04d$2'
+            OutputFileName = $Images[0].Split("\/")[-1] -replace '-?(\d+)?\.jpe?g$', '.mpg'
         }
     }
 }
@@ -65,7 +65,6 @@ Get-Folders -RootFolder $RootFolder |
                 ForEach-Object { $_.ToCharArray()[0] }
         ) -Join "-"
         $outfilename = "$DestFolder\$Prefix-$($_.OutputFilename)"
-
 
         # Use this one to put the videos in $DestFolder
         #$outfilename = "$DestFolder\$($_.OutputFilename)"
