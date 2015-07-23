@@ -62,8 +62,13 @@ filter Out-FfmpegFile {
         # Apparently filters can't have mandatory parameters?
         #[Parameter(Mandatory = $true)]
         $ffmpeg,
-        [switch]$Passthru
+        [switch]$PassThru
     )
+
+    Write-Verbose "Running ffmpeg"
+    Write-Verbose "File spec: $($_.InputFileSpec)"
+    Write-Verbose "Output Filename: $($_.OutputFileName)"
+
     # Currently it will show a lot of red, but that's because ffmpeg is chatty.
     # If running more than once, realize that ffmpeg will stop if the output file already exists
 
@@ -77,6 +82,7 @@ Get-Folders -RootFolder $RootFolder |
     Get-FfmpegCommands -DestPath $DestFolder |
 
     # UNCOMMENT THE FOLLOWING LINE when you're ready to try for real
-    # Out-FfmpegFile -ffmpeg $ffmpeg -Passthru |
+    # Out-FfmpegFile -ffmpeg $ffmpeg -PassThru |
 
+    # To catch any piped output to avoid an error due to commenting/uncommenting stuff
     Out-Default
