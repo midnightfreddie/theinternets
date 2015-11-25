@@ -109,5 +109,17 @@ $Elfs = Invoke-RestMethod @Parameters
 # done 
 
 $Elfs | ForEach-Object {
+    # Run this file with -Verbose or set $VerbosePreference = "Continue" to see verbose output. Set $VerbosePreference = "SilentlyContinue" when overrun by blue wall of text.
     Write-Verbose "$($_.Id), $($_.EventType), $($_.LogDate)"
+    New-Item -ItemType Directory -Name $_.LogDate
+    $Parameters = @{
+        Uri = "https://$($Instance).salesforce.com/services/data/v32.0/sobjects/EventLogFile/$($_.Id)/LogFile"
+        Headers = @{
+            # "X-PrettyPrint" = 1
+            Authorization = "Bearer $AccessToken"
+        }
+        Outfile = "$($_.LogDate)\$($_.EventType)"
+    }
+    Invoke-WebRequest @Parameters
+
 }
