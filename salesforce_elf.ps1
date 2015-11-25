@@ -40,7 +40,9 @@ Param(
     [Parameter(Mandatory=$True)]$UserName,
     [Parameter(Mandatory=$True)]$Password,
     [Parameter(Mandatory=$True)]$Instance,
-    [Parameter(Mandatory=$True)]$Day
+    [Parameter(Mandatory=$True)]$Day,
+    $ClientId = "3MVG99OxTyEMCQ3ilfR5dFvVjgTrCbM3xX8HCLLS4GN72CCY6q86tRzvtjzY.0.p5UIoXHN1R4Go3SjVPs0mx",
+    $ClientSecret = "7899378653052916471"
 )
 
 ####### The following prompts replaced by parameters. Left here in comments for documentation.
@@ -67,8 +69,8 @@ $Parameters = @{
     # }
     Body = @{
         grant_type = "password"
-        client_id = "3MVG99OxTyEMCQ3ilfR5dFvVjgTrCbM3xX8HCLLS4GN72CCY6q86tRzvtjzY.0.p5UIoXHN1R4Go3SjVPs0mx"
-        client_secret = "7899378653052916471"
+        client_id = $ClientId
+        client_secret = $ClientSecret
         username = $UserName
         password = $Password
     }
