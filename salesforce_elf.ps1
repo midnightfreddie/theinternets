@@ -66,6 +66,7 @@ $Parameters = @{
         # "X-PrettyPrint" = 1
     }
     Body = @{
+        grant_type = "password"
         client_id = "3MVG99OxTyEMCQ3ilfR5dFvVjgTrCbM3xX8HCLLS4GN72CCY6q86tRzvtjzY.0.p5UIoXHN1R4Go3SjVPs0mx"
         client_secret = "7899378653052916471"
         username = $UserName
