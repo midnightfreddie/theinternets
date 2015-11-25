@@ -119,7 +119,7 @@ $Elfs | ForEach-Object {
             # "X-PrettyPrint" = 1
             Authorization = "Bearer $AccessToken"
         }
-        Outfile = "$($_.LogDate)\$($_.EventType)"
+        Outfile = "$($_.LogDate)\$($_.EventType).csv"
     }
     Invoke-WebRequest @Parameters
 
