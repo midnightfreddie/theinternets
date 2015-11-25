@@ -61,7 +61,19 @@ param(
 # read -p "Please enter logdate (e.g. Yesterday, Last_Week, Last_n_Days:5) (and press ENTER): " day
 
 #change client_id and client_secret to your own connected app - bit.ly/sfdcConnApp
-access_token=`curl https://${instance}.salesforce.com/services/oauth2/token -d "grant_type=password" -d "client_id=3MVG99OxTyEMCQ3ilfR5dFvVjgTrCbM3xX8HCLLS4GN72CCY6q86tRzvtjzY.0.p5UIoXHN1R4Go3SjVPs0mx" -d "client_secret=7899378653052916471" -d "username=${username}" -d "password=${password}" -H "X-PrettyPrint:1" | jq -r '.access_token'`
+# access_token=`curl https://${instance}.salesforce.com/services/oauth2/token -d "grant_type=password" -d "client_id=3MVG99OxTyEMCQ3ilfR5dFvVjgTrCbM3xX8HCLLS4GN72CCY6q86tRzvtjzY.0.p5UIoXHN1R4Go3SjVPs0mx" -d "client_secret=7899378653052916471" -d "username=${username}" -d "password=${password}" -H "X-PrettyPrint:1" | jq -r '.access_token'`
+$Parameters = @{
+    Uri = "https://$($Instance).salesforce.com/services/oauth2/token"
+    Header = "X-PrettyPrint:1"
+    Body = @{
+        client_id = "3MVG99OxTyEMCQ3ilfR5dFvVjgTrCbM3xX8HCLLS4GN72CCY6q86tRzvtjzY.0.p5UIoXHN1R4Go3SjVPs0mx"
+        client_secret = "7899378653052916471"
+        username = $UserName
+        password = $Password
+    }
+}
+$Result = Invoke-RestMethod @Parameters
+$AccessToken = $Result.access_token
 
 #set elfs to the result of ELF query
 elfs=`curl https://${instance}.salesforce.com/services/data/v32.0/query?q=Select+Id+,+EventType+,+LogDate+From+EventLogFile+Where+LogDate+=+${day} -H 'Authorization: Bearer {AccessToken}' -H "X-PrettyPrint:1"`
