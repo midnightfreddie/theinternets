@@ -1,17 +1,8 @@
 # 2015-11-24. Yoinked from https://github.com/atorman/elfBash/blob/master/elfCURL_win.sh
 #   Intending to convert to Powershell.
+#   As requested by https://www.reddit.com/r/PowerShell/comments/3tlvnu/converting_bash_to_powershell/
 
-# Not ready yet. abort! abort!
-break
-
-param(
-)
-
-#!/bin/bash
-# Windows Bash script to download EventLogFiles
-# Pre-requisite: download - http://stedolan.github.io/jq/ to parse JSON
-# Pre-requisite: download cygwin and curl utilities - see repo help docs
-
+# As required, maintaining copyright notice. This applies to this file only:
  #/**
  #* Copyright (c) 2012, Salesforce.com, Inc.  All rights reserved.
  #* 
@@ -44,18 +35,30 @@ param(
  #* OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  #*/
 
-#prompt the user to enter their username
-read -p "Please enter username (and press ENTER): " username
+# Not ready yet. abort! abort!
+break
 
-#prompt the user to enter their password 
-read -s -p "Please enter password (and press ENTER): " password
+param(
+    $UserName,
+    $Password,
+    $Instance,
+    $Day
+)
 
-#prompt the user to enter their instance end-point 
-echo 
-read -p "Please enter instance (e.g. emea) for the loginURL (and press ENTER): " instance
-
-#prompt the user to enter the date for the logs they want to download
-read -p "Please enter logdate (e.g. Yesterday, Last_Week, Last_n_Days:5) (and press ENTER): " day
+####### The following prompts replaced by parameters. Left here in comments for documentation.
+#
+# #prompt the user to enter their username
+# read -p "Please enter username (and press ENTER): " username
+# 
+# #prompt the user to enter their password 
+# read -s -p "Please enter password (and press ENTER): " password
+# 
+# #prompt the user to enter their instance end-point 
+# echo 
+# read -p "Please enter instance (e.g. emea) for the loginURL (and press ENTER): " instance
+# 
+# #prompt the user to enter the date for the logs they want to download
+# read -p "Please enter logdate (e.g. Yesterday, Last_Week, Last_n_Days:5) (and press ENTER): " day
 
 #change client_id and client_secret to your own connected app - bit.ly/sfdcConnApp
 access_token=`curl https://${instance}.salesforce.com/services/oauth2/token -d "grant_type=password" -d "client_id=3MVG99OxTyEMCQ3ilfR5dFvVjgTrCbM3xX8HCLLS4GN72CCY6q86tRzvtjzY.0.p5UIoXHN1R4Go3SjVPs0mx" -d "client_secret=7899378653052916471" -d "username=${username}" -d "password=${password}" -H "X-PrettyPrint:1" | jq -r '.access_token'`
