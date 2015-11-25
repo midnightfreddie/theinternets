@@ -98,7 +98,7 @@ $BaseIndexFileName = "$DestPath\$((Get-Date -Format s).Replace(":", "-"))-output
 Get-Folders -RootFolder $RootFolder |
     Get-FfmpegCommands -DestPath $DestPath |
     Out-FfmpegFile -ffmpeg $ffmpeg -PassThru -ForReal $ForReal |
-    # ConvertTo-Json
+    # ConvertTo-Json | Out-File -Encoding utf8 -FilePath "$BaseIndexFileName.json"
     # Export-Csv -NoTypeInformation -Path "$BaseIndexFileName.csv"
     ConvertTo-Html | Out-File -Encoding utf8 -FilePath "$BaseIndexFileName.html"
 
