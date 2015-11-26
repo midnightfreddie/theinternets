@@ -3,7 +3,7 @@
 # Using as reference: https://en.wikipedia.org/wiki/Digest_access_authentication
 # NOT COMPLETE OR TESTED AGAINST DIGEST AUTH SERVER. This is just an example at how I think this would go.
 # TODO: Make suthorization into a function? Perhaps have it increase nc and recalculate each time it's called
-# TODO: Better yeat, wrap Invoke-Webrequest in function that increments nc and recalculates hashes
+# TODO: Better yet, wrap Invoke-Webrequest in function that increments nc and recalculates hashes
 # TODO: And this wrapped function could catch 401 replies and then authenticate automagically?
 
 [cmdletbinding()]
