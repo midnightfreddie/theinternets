@@ -1,4 +1,9 @@
-﻿# 2015-11-25
+﻿#############################################################################################################################
+##### ATTENTION: Forget this code. Just use -Credential with Invoke-WebRequest. It handles digest authentication for us #####
+#############################################################################################################################
+
+
+# 2015-11-25
 # In reply to https://www.reddit.com/r/PowerShell/comments/3u7p4j/is_it_possible_to_use_digest_authentication_with/
 # Using as reference: https://en.wikipedia.org/wiki/Digest_access_authentication
 # NOT COMPLETE OR TESTED AGAINST DIGEST AUTH SERVER. This is just an example at how I think this would go.
