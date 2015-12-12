@@ -3,7 +3,7 @@ param (
     $InCsv = "C:\temp\allCountries.txt",
     $OutCsv = "C:\Temp\allCountries2.csv",
     $InSeparator = "`t",
-    $Header = (1..19 | ForEach-Object { [char](64 + $_) }) -join ","
+    $Header = ( 1..19 | ForEach-Object { [char](64 + $_) } )
 )
 
 filter Track-Info {
@@ -22,7 +22,7 @@ filter Track-Info {
                 $MaxWorkingSet = $WorkingSet
             }
             Write-Verbose "Row $RowCount, Working set $WorkingSet, Max $MaxWorkingSet"
-            [System.GC]::Collect()
+            # [System.GC]::Collect()
         }
         # emit the current object/row, pass it down the pipeline
         $_
@@ -33,10 +33,28 @@ filter Track-Info {
     }
 }
 
+filter Collect-Garbage {
+    begin {
+        $RowCount = 0
+    }
+    process {
+        $RowCount += 1
+        # Every so often, perform GC
+        if ($RowCount % 100000 -eq 0) {
+            [System.GC]::Collect()
+        }
+        # emit the current object/row, pass it down the pipeline
+        $_
+    }
+    end {
+    }
+}
 
 Measure-Command {
     Import-Csv -Delimiter $InSeparator $InCsv -Header $Header |
+    # Import-Csv -Delimiter $InSeparator $InCsv  |
         Track-Info |
+        Collect-Garbage |
         Export-Csv -NoTypeInformation $OutCsv
 }
 
