@@ -2,7 +2,8 @@
 param (
     $InCsv = "C:\temp\allCountries.txt",
     $OutCsv = "C:\Temp\allCountries2.csv",
-    $InSeparator = "`t"
+    $InSeparator = "`t",
+    $Header = (1..19 | ForEach-Object { [char](64 + $_) }) -join ","
 )
 
 filter Track-Info {
@@ -31,17 +32,18 @@ filter Track-Info {
     }
 }
 
-Measure-Command {
-    Import-Csv -Delimiter $InSeparator $InCsv |
-        Track-Info |
-        Export-Csv -NoTypeInformation $OutCsv
-}
-
-# Wait a few seconds to allow memory to free up
-Start-Sleep -Seconds 60
 
 Measure-Command {
-    Get-Content $InCsv |
-        Track-Info |
-        Out-File -Encoding ascii $OutCsv
+    Import-Csv -Delimiter $InSeparator $InCsv -Header $Header |
+        # Track-Info |
+        Out-Null
+        # Export-Csv -NoTypeInformation $OutCsv
 }
+
+# Measure-Command {
+#     Get-Content $InCsv |
+#         # Track-Info |
+#         Out-Null
+#         # Out-File -Encoding ascii $OutCsv 
+# }
+
