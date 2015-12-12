@@ -22,6 +22,7 @@ filter Track-Info {
                 $MaxWorkingSet = $WorkingSet
             }
             Write-Verbose "Row $RowCount, Working set $WorkingSet, Max $MaxWorkingSet"
+            [System.GC]::Collect(0)
         }
         # emit the current object/row, pass it down the pipeline
         $_
@@ -35,15 +36,13 @@ filter Track-Info {
 
 Measure-Command {
     Import-Csv -Delimiter $InSeparator $InCsv -Header $Header |
-        # Track-Info |
-        Out-Null
-        # Export-Csv -NoTypeInformation $OutCsv
+        Track-Info |
+        Export-Csv -NoTypeInformation $OutCsv
 }
 
 # Measure-Command {
 #     Get-Content $InCsv |
-#         # Track-Info |
-#         Out-Null
-#         # Out-File -Encoding ascii $OutCsv 
+#         Track-Info |
+#         Out-File -Encoding ascii $OutCsv 
 # }
 
