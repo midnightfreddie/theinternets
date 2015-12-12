@@ -22,7 +22,7 @@ filter Track-Info {
                 $MaxWorkingSet = $WorkingSet
             }
             Write-Verbose "Row $RowCount, Working set $WorkingSet, Max $MaxWorkingSet"
-            [System.GC]::Collect(0)
+            [System.GC]::Collect()
         }
         # emit the current object/row, pass it down the pipeline
         $_
