@@ -1,4 +1,4 @@
-﻿# From http://kunaludapi.blogspot.com/2015/12/format-table-color-style-odd-even-rows.html
+﻿# Adapted from http://kunaludapi.blogspot.com/2015/12/format-table-color-style-odd-even-rows.html
 
 filter Format-OddEven {
     begin {
@@ -9,7 +9,7 @@ filter Format-OddEven {
             $Number += 1
             $ConsoleBack = [System.Console]::BackgroundColor
             $ConsoleFore = [System.Console]::ForegroundColor
-            if (($Number % 2) -eq 0) {
+            if (([Math]::Floor($Number / 3) % 2) -eq 0) {
                 [System.Console]::BackgroundColor = "DarkGray"
                 [System.Console]::ForegroundColor = "black"
                 $_ 
