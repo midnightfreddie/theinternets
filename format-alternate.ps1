@@ -3,27 +3,24 @@
 filter Format-OddEven {
     begin {
         $Number = 0
-    }
+        $ConsoleBack = [System.Console]::BackgroundColor
+        $ConsoleFore = [System.Console]::ForegroundColor    }
     process {
-        $input | foreach {
-            $Number += 1
-            $ConsoleBack = [System.Console]::BackgroundColor
-            $ConsoleFore = [System.Console]::ForegroundColor
-            if (([Math]::Floor($Number / 3) % 2) -eq 0) {
-                [System.Console]::BackgroundColor = "DarkGray"
-                [System.Console]::ForegroundColor = "black"
-                $_ 
-            } #if
-            else {
-                [System.Console]::BackgroundColor = $ConsoleBack
-                [System.Console]::ForegroundColor = $ConsoleFore
-                $_ 
-            } #else
+        $Number += 1
+        if (([Math]::Floor($Number / 3) % 2) -eq 0) {
+            [System.Console]::BackgroundColor = "DarkGray"
+            [System.Console]::ForegroundColor = "black"
+            $_ 
+        } #if
+        else {
             [System.Console]::BackgroundColor = $ConsoleBack
             [System.Console]::ForegroundColor = $ConsoleFore
-        } #input
+            $_ 
+        } #else
     }
     end {
+        [System.Console]::BackgroundColor = $ConsoleBack
+        [System.Console]::ForegroundColor = $ConsoleFore
     }
 <#
 .Synopsis
