@@ -1,6 +1,9 @@
 ﻿# Adapted from http://kunaludapi.blogspot.com/2015/12/format-table-color-style-odd-even-rows.html
 
-filter Format-OddEven {
+function Format-RowColors {
+    param (
+        $RowsPerGroup = 3
+    )
     begin {
         $Number = 0
         $ConsoleBack = [System.Console]::BackgroundColor
@@ -18,7 +21,8 @@ filter Format-OddEven {
     }
     process {
         $Number += 1
-        $Index = [Math]::Floor($Number / 3) % 2
+        # $Index will be either 0 or 1 and used to pick colors from $RowColors
+        $Index = [Math]::Floor($Number / $RowsPerGroup) % 2
         [System.Console]::BackgroundColor = $RowColors[$Index].Back
         [System.Console]::ForegroundColor = $RowColors[$Index].Fore
         $_
