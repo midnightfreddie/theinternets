@@ -4,19 +4,24 @@ filter Format-OddEven {
     begin {
         $Number = 0
         $ConsoleBack = [System.Console]::BackgroundColor
-        $ConsoleFore = [System.Console]::ForegroundColor    }
+        $ConsoleFore = [System.Console]::ForegroundColor
+        $RowColors = @(
+            @{
+                Back = "DarkGray"
+                Fore = "Black"
+            },
+            @{
+                Back = $ConsoleBack
+                Fore = $ConsoleFore
+            }
+        )
+    }
     process {
         $Number += 1
-        if (([Math]::Floor($Number / 3) % 2) -eq 0) {
-            [System.Console]::BackgroundColor = "DarkGray"
-            [System.Console]::ForegroundColor = "black"
-            $_ 
-        } #if
-        else {
-            [System.Console]::BackgroundColor = $ConsoleBack
-            [System.Console]::ForegroundColor = $ConsoleFore
-            $_ 
-        } #else
+        $Index = [Math]::Floor($Number / 3) % 2
+        [System.Console]::BackgroundColor = $RowColors[$Index].Back
+        [System.Console]::ForegroundColor = $RowColors[$Index].Fore
+        $_
     }
     end {
         [System.Console]::BackgroundColor = $ConsoleBack
