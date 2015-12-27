@@ -1,4 +1,15 @@
 // In reply to https://www.reddit.com/r/angularjs/comments/3ye90u/how_to_pass_a_php_variable_to_angularjs/
+/*
+  Poster is trying to submit a filename in a POST request from Angular to a
+  PHP servlet that seems to return a base64-encoded image file.
+  Below is adapted from his code and untested, but I changed:
+  - the Content-Type
+  - .succss() and .error() to .then() because deprecated
+  - made success and error functions accept result as a parameter
+  - assigned result.data to a variable which should be the data poster needs
+  - This assignment is stupid as shown, but the poster can assign to a scoped variable to keep the data
+*/
+
 
 $scope.MakeGray_Button = function(){
     if ($scope.imageUrl) {
