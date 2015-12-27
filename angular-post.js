@@ -7,32 +7,36 @@
   - .success() and .error() to .then() because deprecated
   - made success and error functions accept result as a parameter
   - assigned result.data to a variable which should be the data poster needs
-  - This assignment is stupid as shown, but the poster can assign to a scoped variable to keep the data
 */
 
 
 $scope.MakeGray_Button = function(){
-    if ($scope.imageUrl) {
-        var MakeGray_Form = new FormData();
-        MakeGray_Form.append("FileName", $scope.imageUrl);
-        $http({
-          method : "POST",
-          url    : "../opencv/MakeGray/MakeGray.php",
-          data   : MakeGray_Form,
-          transformRequest: angular.identity,
-          headers: {'Content-Type': "application/x-www-form-urlencoded"}
-        })
-          .then(function(result){
-              // code if success
-             var base64FromPhp = result.data;
-            },
-            function(result){
-              // code if error
-                console.log(result.status);
-            }
-          );
-    }
-    else{
-        alert("Please upload an image");
-    }
+  if ($scope.imageUrl) {
+    var MakeGray_Form = new FormData();
+    MakeGray_Form.append("FileName", $scope.imageUrl);
+
+    var options = {
+      method : "POST",
+      url    : "../opencv/MakeGray/MakeGray.php",
+      data   : MakeGray_Form,
+      transformRequest: angular.identity,
+      headers: {'Content-Type': "application/x-www-form-urlencoded"}
+    };
+
+    $http(options)
+      .then(HttpSuccess, HttpError);
+  }
+  else{
+      alert("Please upload an image");
+  }
+
+  var HttpSuccess = function (result) {
+    // code if success
+    $scope.base64FromPhp = result.data;
+  }
+
+  var HttpError = function (result) {
+    // code if error
+      console.log(result.status);
+  }
 }
