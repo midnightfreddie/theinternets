@@ -4,7 +4,7 @@
   PHP servlet that seems to return a base64-encoded image file.
   Below is adapted from his code and untested, but I changed:
   - the Content-Type
-  - .succss() and .error() to .then() because deprecated
+  - .success() and .error() to .then() because deprecated
   - made success and error functions accept result as a parameter
   - assigned result.data to a variable which should be the data poster needs
   - This assignment is stupid as shown, but the poster can assign to a scoped variable to keep the data
