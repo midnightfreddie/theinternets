@@ -54,7 +54,7 @@ Measure-Command {
     Import-Csv -Delimiter $InSeparator $InCsv -Header $Header |
     # Import-Csv -Delimiter $InSeparator $InCsv  |
         Track-Info |
-        Collect-Garbage |
+        # Collect-Garbage |
         Export-Csv -NoTypeInformation $OutCsv
 }
 
