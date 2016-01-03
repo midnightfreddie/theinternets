@@ -10,20 +10,23 @@ function Invoke-PowerCSV {
     Import-Csv $InputFile |
         Where-Object { $_.ComputerName -eq $ComputerName } |
         ForEach-Object {
-            $Row = $_
+            $Values = $_.psobject.Properties | Where-Object { $_.Name -ne "ComputerName" }
+
             $FirstValue, $NewValues =  @(
-                $Row.psobject.Properties |
-                    Where-Object { $_.Name -ne "ComputerName" } |
-                    Select-Object -ExpandProperty Value
+                $Values | Select-Object -ExpandProperty Value
                 $UpdateValue
             )
 
             $NewValues
+            $Values.Length
+            0..($Values.Length - 1) | ForEach-Object {
+                $Values[$_].Value = $NewValues[$_]
+                #$Values[$_].Value
+                #$NewValues[$_]
+                #"Hi"
 
-            1..($Row.psobject.Properties.Length) | ForEach-Object {
-                #$Row.psobject.Properties[$_].Value = $NewValues[$_]
-                $Row.psobject.Properties[$_]
             }
+            $_
         } #|
         #Export-Csv -NoTypeInformation $InputFile
 }
