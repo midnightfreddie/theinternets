@@ -19,9 +19,11 @@ function Invoke-PowerCSV {
             )
 
             $NewValues
-            #1..$_.psobject.Properties.Length | ForEach-Object {
-                
-            #}
+
+            1..($Row.psobject.Properties.Length) | ForEach-Object {
+                #$Row.psobject.Properties[$_].Value = $NewValues[$_]
+                $Row.psobject.Properties[$_]
+            }
         } #|
         #Export-Csv -NoTypeInformation $InputFile
 }
