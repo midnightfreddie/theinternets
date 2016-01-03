@@ -11,28 +11,30 @@ function Invoke-PowerCSV {
     # updating the input file I have to store the data in a variable to close the input
     # so it can be reopened for writing
     $IHateThisVariable = Import-Csv $InputFile |
-        Where-Object { $_.ComputerName -eq $ComputerName } |
         ForEach-Object {
-            # Grab an array of the objects of the values (not ComputerName) in the row
-            # These objects are "live". I can update $Values and the object $_ will be updated
-            $Values = $_.psobject.Properties | Where-Object { $_.Name -ne "ComputerName" }
+            if ($_.ComputerName -eq $ComputerName) {
+                # Grab an array of the objects of the values (not ComputerName) in the row
+                # These objects are "live". I can update $Values and the object $_ will be updated
+                $Values = $_.psobject.Properties | Where-Object { $_.Name -ne "ComputerName" }
 
-            # Cute trick: Multiple assignment. $FirstValue will get the first value of the right-side array
-            #   $NewValues will be an array of the remaining values
-            #   The right side is an array of all the values in the csv with $UpdateValue at the end
-            $FirstValue, $NewValues =  @(
-                $Values | Select-Object -ExpandProperty Value
-                $UpdateValue
-            )
+                # Cute trick: Multiple assignment. $FirstValue will get the first value of the right-side array
+                #   $NewValues will be an array of the remaining values
+                #   The right side is an array of all the values in the csv with $UpdateValue at the end
+                $FirstValue, $NewValues =  @(
+                    $Values | Select-Object -ExpandProperty Value
+                    $UpdateValue
+                )
 
-            # Assign $NewValue elements to $Values which will also update $_
-            0..($Values.Length - 1) | ForEach-Object {
-                $Values[$_].Value = $NewValues[$_]
+                # Assign $NewValue elements to $Values which will also update $_
+                0..($Values.Length - 1) | ForEach-Object {
+                    $Values[$_].Value = $NewValues[$_]
+                }
             }
 
-            # Emit the changed object
+            # Emit the possibly-updated row object
             $_
         }
+
         $IHateThisVariable | Export-Csv -NoTypeInformation $InputFile
 }
 
@@ -56,6 +58,6 @@ Neptune,1,1,1,1,1
     Export-Csv -NoTypeInformation -Path $InputFile
 }
 
-$CsvPath = "C:\Users\jim.AD\SkyDrive\Documents\Powershell\theinternets\Challenge1.csv"
-Recreate-TestCsv $CsvPath
-Invoke-PowerCSV -ComputerName "Neptune" -UpdateValue 7 -InputFile $CsvPath
+# $CsvPath = "C:\Users\jim.AD\SkyDrive\Documents\Powershell\theinternets\Challenge1.csv"
+# Recreate-TestCsv $CsvPath
+# Invoke-PowerCSV -ComputerName "Neptune" -UpdateValue 7 -InputFile $CsvPath

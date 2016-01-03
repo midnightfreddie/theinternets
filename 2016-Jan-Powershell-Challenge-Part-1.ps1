@@ -16,4 +16,4 @@ function Invoke-PowerCSV {
         }
 }
 
-Invoke-PowerCSV -ComputerName "Mercury" -InputFile "C:\Users\jim.AD\SkyDrive\Documents\Powershell\theinternets\Challenge1.csv"
+# Invoke-PowerCSV -ComputerName "Mercury" -InputFile "C:\Users\jim.AD\SkyDrive\Documents\Powershell\theinternets\Challenge1.csv"
