@@ -30,9 +30,6 @@ function Invoke-PowerCSV {
                     0..($Values.Length - 1) | ForEach-Object {
                         $Values[$_].Value = $NewValues[$_]
                     }
-
-                    # Emit the possibly-updated row object
-                    $_
                 } else {
                     $_.psobject.Properties |
                         Where-Object { $_.Name -ne "ComputerName" } |
@@ -40,6 +37,10 @@ function Invoke-PowerCSV {
                             $_.Value
                     }
                 }
+            }
+            if ($UpdateValue) {
+                # Emit the possibly-updated row object
+                $_
             }
 
         }
